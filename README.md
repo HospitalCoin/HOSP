@@ -1,0 +1,2 @@
+# HOSP
+Hospital Coin Daemon
