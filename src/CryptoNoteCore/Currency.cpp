@@ -419,8 +419,10 @@ namespace CryptoNote {
 
 	difficulty_type Currency::nextDifficulty(uint8_t blockMajorVersion, std::vector<uint64_t> timestamps,
 		std::vector<difficulty_type> cumulativeDifficulties) const {
-
-		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_3) {
+		if (blockMajorVersion == BLOCK_MAJOR_VERSION_4) {
+			return nextDifficultyV4(timestamps, cumulativeDifficulties);
+		}
+		else if (blockMajorVersion == BLOCK_MAJOR_VERSION_3) {
 			return nextDifficultyV3(timestamps, cumulativeDifficulties);
 		}
 		else if (blockMajorVersion == BLOCK_MAJOR_VERSION_2) {
@@ -524,7 +526,60 @@ namespace CryptoNote {
 
 		return nextDiffZ;
 	}
+	difficulty_type Currency::nextDifficultyV4(std::vector<uint64_t> timestamps,
+		std::vector<difficulty_type> cumulativeDifficulties) const {
 
+		// new difficulty calculation
+		// based on Zawy difficulty algorithm v1.0
+		// next Diff = Avg past N Diff * TargetInterval / Avg past N solve times
+		// as described at https://github.com/monero-project/research-lab/issues/3
+		// Window time span and total difficulty is taken instead of average as suggested by Eugene
+
+			size_t m_difficultyWindow_4 = CryptoNote::parameters::DIFFICULTY_WINDOW_V4;
+			assert(m_difficultyWindow_4 >= 2);
+
+			if (timestamps.size() > m_difficultyWindow_4) {
+				timestamps.resize(m_difficultyWindow_4);
+				cumulativeDifficulties.resize(m_difficultyWindow_4);
+			}
+
+			size_t length = timestamps.size();
+			assert(length == cumulativeDifficulties.size());
+			assert(length <= m_difficultyWindow_4);
+			if (length <= 1) {
+				return 1;
+			}
+
+			sort(timestamps.begin(), timestamps.end());
+
+			uint64_t timeSpan = timestamps.back() - timestamps.front();
+			if (timeSpan == 0) {
+				timeSpan = 1;
+			}
+
+			difficulty_type totalWork = cumulativeDifficulties.back() - cumulativeDifficulties.front();
+			assert(totalWork > 0);
+
+			// uint64_t nextDiffZ = totalWork * m_difficultyTarget / timeSpan; 
+
+			uint64_t low, high;
+			low = mul128(totalWork, m_difficultyTarget, &high);
+			// blockchain error "Difficulty overhead" if this function returns zero
+			if (high != 0) {
+				return 0;
+			}
+
+			uint64_t nextDiffZ = low / timeSpan;
+
+			// minimum limit
+			if (nextDiffZ <= 100000) {
+				nextDiffZ = 100000;
+			}
+
+			return nextDiffZ;
+
+			// end of new difficulty calculation
+	}
 	difficulty_type Currency::nextDifficultyV3(std::vector<uint64_t> timestamps,
 		std::vector<difficulty_type> cumulativeDifficulties) const {
 
