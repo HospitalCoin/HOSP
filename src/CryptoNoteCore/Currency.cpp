@@ -583,8 +583,6 @@ namespace CryptoNote {
 			next_difficulty = 100000;
 		}
 
-		logger(INFO) << ".......We are on nextDifficultyV4........";
-
 		return next_difficulty;
 
 	}
@@ -664,14 +662,17 @@ namespace CryptoNote {
 	bool Currency::checkProofOfWorkV2(Crypto::cn_context& context, const Block& block, difficulty_type currentDiffic,
 		Crypto::Hash& proofOfWork) const {
 		if (block.majorVersion < BLOCK_MAJOR_VERSION_2) {
+			logger(ERROR) << "block.majorVersion < BLOCK_MAJOR_VERSION_2) ERROR........";
 			return false;
 		}
 
 		if (!get_block_longhash(context, block, proofOfWork)) {
+			logger(ERROR) << "get_block_longhash ERROR........";
 			return false;
 		}
 
 		if (!check_hash(proofOfWork, currentDiffic)) {
+			logger(ERROR) << "check_hash(proofOfWork, currentDiffic) ERROR........";
 			return false;
 		}
 
@@ -682,11 +683,13 @@ namespace CryptoNote {
 		}
 
 		if (8 * sizeof(m_genesisBlockHash) < block.parentBlock.blockchainBranch.size()) {
+			logger(ERROR) << "8 * sizeof(m_genesisBlockHash) < block.parentBlock.blockchainBranch.size() ERROR........";
 			return false;
 		}
 
 		Crypto::Hash auxBlockHeaderHash;
 		if (!get_aux_block_header_hash(block, auxBlockHeaderHash)) {
+			logger(ERROR) << "get_aux_block_header_hash(block, auxBlockHeaderHash) ERROR........";
 			return false;
 		}
 
