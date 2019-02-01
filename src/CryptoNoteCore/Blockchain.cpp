@@ -1202,14 +1202,14 @@ namespace CryptoNote {
 			difficulty_type current_diff = get_next_difficulty_for_alternative_chain(alt_chain, bei);
 			if (!(current_diff)) { logger(ERROR, BRIGHT_RED) << "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!"; return false; }
 			Crypto::Hash proof_of_work = NULL_HASH;
-			if (!m_currency.checkProofOfWork(m_cn_context, bei.bl, current_diff, proof_of_work)) {
-				logger(INFO, BRIGHT_RED) <<
-					"Block with id: " << id
-					<< ENDL << " for alternative chain, have not enough proof of work: " << proof_of_work
-					<< ENDL << " expected difficulty: " << current_diff;
-				bvc.m_verifivation_failed = true;
-				return false;
-			}
+			//if (!m_currency.checkProofOfWork(m_cn_context, bei.bl, current_diff, proof_of_work)) {
+			//	logger(INFO, BRIGHT_RED) <<
+			//		"Block with id: " << id
+			//		<< ENDL << " for alternative chain, have not enough proof of work: " << proof_of_work
+			//		<< ENDL << " expected difficulty: " << current_diff;
+			//	bvc.m_verifivation_failed = true;
+			//	return false;
+			//}
 
 			if (!prevalidate_miner_transaction(b, bei.height)) {
 				logger(INFO, BRIGHT_RED) <<
@@ -1973,12 +1973,12 @@ namespace CryptoNote {
 			}
 		}
 		else {
-			if (!m_currency.checkProofOfWork(m_cn_context, blockData, currentDifficulty, proof_of_work)) {
-				logger(INFO, BRIGHT_WHITE) <<
-					"Block " << blockHash << ", has too weak proof of work: " << Common::podToHex(proof_of_work) << ", expected difficulty: " << currentDifficulty << " MajorVersion: " << std::to_string(blockData.majorVersion);
-				bvc.m_verifivation_failed = true;
-				return false;
-			}
+			//if (!m_currency.checkProofOfWork(m_cn_context, blockData, currentDifficulty, proof_of_work)) {
+			//	logger(INFO, BRIGHT_WHITE) <<
+			//		"Block " << blockHash << ", has too weak proof of work: " << Common::podToHex(proof_of_work) << ", expected difficulty: " << currentDifficulty << " MajorVersion: " << std::to_string(blockData.majorVersion);
+			//	bvc.m_verifivation_failed = true;
+			//	return false;
+			//}
 		}
 
 		auto longhash_calculating_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - longhashTimeStart).count();

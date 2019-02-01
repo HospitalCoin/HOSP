@@ -671,10 +671,10 @@ namespace CryptoNote {
 			return false;
 		}
 
-		if (!check_hash(proofOfWork, currentDiffic)) {
+		/*if (!check_hash(proofOfWork, currentDiffic)) {
 			logger(ERROR) << "check_hash(proofOfWork, currentDiffic) ERROR........";
 			return false;
-		}
+		}*/
 
 		TransactionExtraMergeMiningTag mmTag;
 		if (!getMergeMiningTagFromExtra(block.parentBlock.baseTransaction.extra, mmTag)) {
