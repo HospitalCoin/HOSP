@@ -670,11 +670,12 @@ namespace CryptoNote {
 			logger(ERROR) << "get_block_longhash ERROR........";
 			return false;
 		}
-
-		/*if (!check_hash(proofOfWork, currentDiffic)) {
-			logger(ERROR) << "check_hash(proofOfWork, currentDiffic) ERROR........";
-			return false;
-		}*/
+		if (block.majorVersion < BLOCK_MAJOR_VERSION_4) {
+			if (!check_hash(proofOfWork, currentDiffic)) {
+				logger(ERROR) << "check_hash(proofOfWork, currentDiffic) ERROR........";
+				return false;
+			}
+		}
 
 		TransactionExtraMergeMiningTag mmTag;
 		if (!getMergeMiningTagFromExtra(block.parentBlock.baseTransaction.extra, mmTag)) {
